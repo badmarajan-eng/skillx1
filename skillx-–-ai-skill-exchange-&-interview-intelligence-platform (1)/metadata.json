@@ -1,0 +1,8 @@
+{
+  "name": "SkillX – AI Skill Exchange & Interview Intelligence Platform",
+  "description": "A premium AI-powered platform for skill exchange and interview intelligence, featuring AI coaching, real-time feedback, and resume analysis.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

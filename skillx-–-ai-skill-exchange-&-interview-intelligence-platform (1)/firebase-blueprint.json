@@ -1,0 +1,155 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile and account information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "displayName": { "type": "string", "description": "Full name" },
+        "email": { "type": "string", "format": "email" },
+        "photoURL": { "type": "string", "format": "uri" },
+        "role": { "type": "string", "enum": ["learner", "mentor", "both", "admin"] },
+        "credits": { "type": "number", "description": "Available credit balance" },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "bio": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewsCount": { "type": "number" },
+        "isVerified": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "credits"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A booked mentoring session",
+      "type": "object",
+      "properties": {
+        "mentorId": { "type": "string", "description": "UID of the mentor" },
+        "learnerId": { "type": "string", "description": "UID of the learner" },
+        "topic": { "type": "string" },
+        "startTime": { "type": "string", "format": "date-time" },
+        "duration": { "type": "number", "description": "Duration in minutes" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "completed", "cancelled"] },
+        "price": { "type": "number" },
+        "meetingLink": { "type": "string", "format": "uri" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["mentorId", "learnerId", "topic", "startTime", "status", "price"]
+    },
+    "Interview": {
+      "title": "Interview",
+      "description": "AI Interview result and analysis",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "role": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "duration": { "type": "string" },
+        "overallScore": { "type": "number" },
+        "scores": { "type": "object" },
+        "insights": { "type": "array" },
+        "improvementPlan": { "type": "string" },
+        "summary": { "type": "string" },
+        "transcript": { "type": "array" },
+        "tabSwitches": { "type": "number" }
+      },
+      "required": ["userId", "role", "date", "overallScore"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A chat message between two users",
+      "type": "object",
+      "properties": {
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "content": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "isRead": { "type": "boolean" }
+      },
+      "required": ["senderId", "receiverId", "content", "timestamp"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A credit transaction record",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["earn", "spend", "topup"] },
+        "amount": { "type": "number" },
+        "description": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string" }
+      },
+      "required": ["userId", "type", "amount", "timestamp"]
+    },
+    "Material": {
+      "title": "Material",
+      "description": "A study resource shared by a user",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "type": { "type": "string", "enum": ["pdf", "video", "link", "article"] },
+        "url": { "type": "string", "format": "uri" },
+        "author": { "type": "string" },
+        "authorId": { "type": "string" },
+        "likes": { "type": "number" },
+        "comments": { "type": "number" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "type", "url", "authorId"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "A review for a mentor",
+      "type": "object",
+      "properties": {
+        "mentorId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["mentorId", "userId", "rating", "comment"]
+    },
+    "ResumeAnalysis": {
+      "title": "ResumeAnalysis",
+      "description": "AI Resume analysis result",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "score": { "type": "number" },
+        "summary": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "score", "summary", "createdAt"]
+    },
+    "SkillVerification": {
+      "title": "SkillVerification",
+      "description": "A skill verification request or result",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "skill": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "verified", "rejected"] },
+        "evidence": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "skill", "status", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users": { "schema": "User", "description": "User profiles" },
+    "sessions": { "schema": "Session", "description": "Mentoring sessions" },
+    "interviews": { "schema": "Interview", "description": "AI Interview history" },
+    "messages": { "schema": "Message", "description": "Chat messages" },
+    "transactions": { "schema": "Transaction", "description": "Credit history" },
+    "materials": { "schema": "Material", "description": "Shared study materials" },
+    "reviews": { "schema": "Review", "description": "Mentor reviews" },
+    "resume_analyses": { "schema": "ResumeAnalysis", "description": "Resume analysis history" },
+    "skill_verifications": { "schema": "SkillVerification", "description": "Skill verification records" }
+  }
+}

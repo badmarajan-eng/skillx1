@@ -1,0 +1,95 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == "24205006@drngpit.ac.in");
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId);
+      allow update: if isOwner(userId) || isAdmin();
+    }
+
+    // Sessions Collection
+    match /sessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.mentorId || 
+        request.auth.uid == resource.data.learnerId ||
+        isAdmin()
+      );
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && (
+        request.auth.uid == resource.data.mentorId || 
+        request.auth.uid == resource.data.learnerId ||
+        isAdmin()
+      );
+    }
+
+    // Interviews Collection
+    match /interviews/{interviewId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isAdmin();
+    }
+
+    // Resume Analyses Collection
+    match /resume_analyses/{analysisId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isAdmin();
+    }
+
+    // Messages Collection
+    match /messages/{messageId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.senderId || 
+        request.auth.uid == resource.data.receiverId ||
+        isAdmin()
+      );
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.senderId;
+      allow update, delete: if isAdmin();
+    }
+
+    // Transactions Collection
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isAdmin();
+    }
+
+    // Materials Collection
+    match /materials/{materialId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update, delete: if isAuthenticated() && (request.auth.uid == resource.data.authorId || isAdmin());
+    }
+
+    // Reviews Collection
+    match /reviews/{reviewId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+
+    // Skill Verifications Collection
+    match /skill_verifications/{verificationId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
